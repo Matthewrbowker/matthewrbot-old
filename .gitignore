@@ -15,4 +15,6 @@ Matthewrbot/config.local.inc.py
 
 */Peachy
 
-WikiWelcomer/mwclient
+WikiWelcomer/
+
+*.pyc
