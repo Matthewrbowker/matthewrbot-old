@@ -1,11 +1,11 @@
 .DS_Store
-Matthewrbot-PHP/apibot/logins.php
+Matthewrbot/apibot/logins.php
 
-Matthewrbot-PHP/login.php
+Matthewrbot/login.php
 
-Matthewrbot-PHP/main.log
+Matthewrbot/main.log
 
-Matthewrbot-PHP/config.inc.php
+Matthewrbot/config.inc.php
 
 *.wikiinfo
 
@@ -14,3 +14,5 @@ Matthewrbot-PHP/config.inc.php
 Matthewrbot/config.local.inc.py
 
 */Peachy
+
+WikiWelcomer/mwclient
