@@ -1,20 +1,7 @@
 .DS_Store
-Matthewrbot/apibot/logins.php
-
-Matthewrbot/login.php
-
-Matthewrbot/main.log
 
 Matthewrbot/config.inc.php
-
-*.wikiinfo
-
-*.userinfo
 
 Matthewrbot/config.local.inc.py
 
 */Peachy
-
-WikiWelcomer/
-
-*.pyc
