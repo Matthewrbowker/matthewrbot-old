@@ -1,1 +1,14 @@
 .DS_Store
+Matthewrbot-PHP/apibot/logins.php
+
+Matthewrbot-PHP/login.php
+
+Matthewrbot-PHP/main.log
+
+Matthewrbot-PHP/config.inc.php
+
+*.wikiinfo
+
+*.userinfo
+
+Matthewrbot/config.local.inc.py

@@ -5,6 +5,8 @@ from sites import pages,section;
 import urllib;
 #from functions import sort;
 
+import config.local.inc.py # Get local configuration
+
 #Define the database and connect
 
 db = oursql.connect(db='u_matthewrbowker_articlerequest',
@@ -18,7 +20,7 @@ curs = db.cursor();
 
 #OK, now for MWclient
 site = mwclient.Site('en.wikipedia.org');
-site.login("matthewrbot","Kind1e");
+site.login(uname,password);
 
 #Query the database
 result = curs.execute("SELECT * FROM `requests` WHERE 1");
