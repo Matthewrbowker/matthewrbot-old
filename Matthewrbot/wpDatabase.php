@@ -1,22 +1,22 @@
 <?php
 
 class wpDatabase {
-	private $p;
-	function __construct($dbHost,$dbName,$dbUser,$dbPass) {
-		$pdoString = "mysql:host={$dbHost};dbname={$dbName};charset=utf8";
+    private $p;
+    function __construct($dbHost,$dbName,$dbUser,$dbPass) {
+        $pdoString = "mysql:host={$dbHost};dbname={$dbName};charset=utf8";
 
 
-		try {
-			$this->p = new PDO($pdoString, $dbUser, $dbPass);
-		}
-		catch(PDOException $ex) {
-			echo "Problem connecting to the database: " . $ex->getMessage();
-			die("\r");
-		}
+        try {
+            $this->p = new PDO($pdoString, $dbUser, $dbPass);
+        }
+        catch(PDOException $ex) {
+            echo "Problem connecting to the database: " . $ex->getMessage() . "\r\n";
+            die("\r");
+        }
 
-	}
+    }
 
-	function query($query) {
-		print $query;
-	}
+    function query($query) {
+        print $query;
+    }
 }

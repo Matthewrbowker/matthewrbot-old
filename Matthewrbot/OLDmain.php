@@ -12,11 +12,11 @@ $x = Peachy::newWiki("Matthewrbot_local"); //Loads the config file
 $pdoString = "mysql:host={$dbhost};dbname={$dbname};charset=utf8";
 
 try {
-	$p = new PDO($pdoString, $dbuser, $dbpw);
+    $p = new PDO($pdoString, $dbuser, $dbpw);
 }
 catch(PDOException $ex) {
-	echo "Problem connecting to the database: " . $ex->getMessage();
-	die("\r");
+    echo "Problem connecting to the database: " . $ex->getMessage();
+    die("\r");
 }
 
 $qResult = $p->query("SELECT * FROM `requests` where `done`='0'");
@@ -24,26 +24,26 @@ $qResult = $p->query("SELECT * FROM `requests` where `done`='0'");
 $values = $qResult->fetchAll();
 
 foreach ($values as $row) {
-	$page = initPage( "User:Matthewrbot/testbed1");
+    $page = initPage( "User:Matthewrbot/testbed1");
 
-	if ($page != null && $page->get_text() != NULL) {
-		//echo $page->get_text();
-	}
-	else {
-		echo "NULL";
-	}
+    if ($page != null && $page->get_text() != NULL) {
+        //echo $page->get_text();
+    }
+    else {
+        echo "NULL";
+    }
 
-	$id = $row['id'];
+    $id = $row['id'];
 
-	$newPageText = insertRequest($page -> get_text(), $row['id'], $row['subject'], $row["Description"], $row["Sources"], $row["Username"]);
-	echo $newPageText;
-	$page->edit($newPageText, "Inserting request for [[{$row['subject']}]]");
+    $newPageText = insertRequest($page -> get_text(), $row['id'], $row['subject'], $row["Description"], $row["Sources"], $row["Username"]);
+    echo $newPageText;
+    $page->edit($newPageText, "Inserting request for [[{$row['subject']}]]");
 
-	$update = $p -> prepare("UPDATE `requests` SET `done`='1' WHERE `id`='{$id}'");
+    $update = $p -> prepare("UPDATE `requests` SET `done`='1' WHERE `id`='{$id}'");
 
-	$update -> execute();
+    $update -> execute();
 
-	sleep('5');
+    sleep('5');
 }
 
 return 0;

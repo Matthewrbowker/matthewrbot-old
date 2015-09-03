@@ -5,10 +5,10 @@ require('includes.php');
 if (!checkRun(2)) die("Configuration set to off... exiting.\n");
 
 $pages = array("Wikipedia:Vital articles/Level/1",
-	"Wikipedia:Vital articles/Level/2",
-	"Wikipedia:Vital articles",
+    "Wikipedia:Vital articles/Level/2",
+    "Wikipedia:Vital articles",
 
-	// Expanded Vital Articless
+    // Expanded Vital Articless
     "Wikipedia:Vital articles/Expanded/People",
     "Wikipedia:Vital articles/Expanded/History",
     "Wikipedia:Vital articles/Expanded/Geography",

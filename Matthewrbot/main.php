@@ -18,8 +18,8 @@ $mod = new module($db, $x);
 $return = $mod->execute();
 
 if ($return) {
-	return 0;
+    return 0;
 }
 else {
-	return 1;
+    return 1;
 }
