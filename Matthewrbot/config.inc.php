@@ -1,8 +1,14 @@
 <?php
 
-$dbhost = "localhost";
-$dbuser = "root";
+$dbhost = "";
+$dbuser = "";
 $dbpw = "";
-$db_name="articlerequest";
+$dbname="";
+
+$url = "";
+
+$controlUrl = "";
+
+$version = "0.1devel1";
 
 ?>
