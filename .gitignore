@@ -1,9 +1,5 @@
 .DS_Store
 
-Matthewrbot/config.inc.php
+config.inc.php
 
-Matthewrbot/config.local.inc.py
-
-*/Peachy
-
-Matthewrbot/config.inc.local.php
+Peachy

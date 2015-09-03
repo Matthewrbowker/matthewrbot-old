@@ -10,7 +10,7 @@ class wpDatabase {
             $this->p = new PDO($pdoString, $dbUser, $dbPass);
         }
         catch(PDOException $ex) {
-            echo "Problem connecting to the database: " . $ex->getMessage() . "\r\n";
+            echo "Problem connecting to the database: " . $ex->getMessage() . "$pdoString\r\n";
             die("\r");
         }
 
