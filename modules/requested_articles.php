@@ -32,7 +32,7 @@ class module {
 
     function execute() {
         // NEEDS TO BE EDITED
-        $qResult = $this->db->query("SELECT * FROM `requests` where `done`='0'");
+        $qResult = $this->db->selectQuery("*", "requests", ["done",'0']);
 
         $values = $qResult->fetchAll();
 

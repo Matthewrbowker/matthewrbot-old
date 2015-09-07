@@ -10,5 +10,6 @@ class module {
 
     function execute() {
         echo "We would execute our module here";
+        return true;
     }
 }

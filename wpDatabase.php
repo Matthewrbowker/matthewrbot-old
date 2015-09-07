@@ -2,6 +2,12 @@
 
 class wpDatabase {
     private $p;
+
+    function dbError($ex, $additional = "") {
+        echo "Database Error: " . $ex->getMessage() . " - $additional\r\n";
+        die();
+    }
+
     function __construct($dbHost,$dbName,$dbUser,$dbPass) {
         $pdoString = "mysql:host={$dbHost};dbname={$dbName};charset=utf8";
 
@@ -10,13 +16,17 @@ class wpDatabase {
             $this->p = new PDO($pdoString, $dbUser, $dbPass);
         }
         catch(PDOException $ex) {
-            echo "Problem connecting to the database: " . $ex->getMessage() . "$pdoString\r\n";
-            die("\r");
+            $this->dbError($ex, $pdoString);
         }
 
     }
 
-    function query($query) {
+    private function query($query, ...$values) {
         print $query;
+        print $values;
+    }
+
+    function selectQuery($fields, $table, $where = "1", $limit = NULL) {
+        $this->query("SELECT * FROM `table` WHERE 1");
     }
 }
