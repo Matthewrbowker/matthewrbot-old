@@ -21,12 +21,48 @@ class wpDatabase {
 
     }
 
-    private function query($query, ...$values) {
-        print $query;
-        print $values;
+    private function query($query) {
+        print "$query\r\n";
+        try {
+            $prepared = $this->p->prepare($query);
+            $prepared->execute();
+            return $prepared->fetchAll();
+        }
+        catch(PDOException $ex) {
+            $this->dbError($ex, $query);
+        }
     }
 
     function selectQuery($fields, $table, $where = "1", $limit = NULL) {
-        $this->query("SELECT * FROM `table` WHERE 1");
+        $queryString = "SELECT ";
+        $firstLoop = true;
+        if (is_array($fields)) {
+            foreach($fields as $value) {
+                if (!$firstLoop) {$queryString .= ", ";}
+
+                $queryString .= "`$value` ";
+                $firstLoop = false;
+            }
+        } else {
+            $queryString .= "$fields ";
+        }
+
+        $queryString .= "FROM `$table` ";
+
+        if (is_array($where)) {
+            $queryString .= "WHERE `$where[0]` = '$where[1]' ";
+        } else {$queryString .= "WHERE $where";}
+
+        if ($limit != NULL) {$queryString .= "LIMIT $limit"; }
+
+        return $this->query($queryString);
+    }
+
+    function updateQuery($table, $field, $where) {
+        $queryString = "UPDATE ";
+        $queryString .= "`$table` ";
+        $queryString .= "SET `$field[0]`='$field[1]' ";
+        $queryString .= "WHERE `$where[0]` = '$where[1]'";
+        return $this->query($queryString);
     }
 }
