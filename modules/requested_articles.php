@@ -1,6 +1,6 @@
 <?php
 
-class requested_article {
+class requested_articles {
     private $db;
     private $p;
     function __construct(wpDatabase $dbTemp, Wiki $pTemp) {
@@ -45,6 +45,7 @@ class requested_article {
     }
 
     function execute() {
+        print "HIT MODULE";
         // TODO: Split function into methods
         $qResult = $this->db->selectQuery("*", "requests", ["done",'0'], 1000);
 

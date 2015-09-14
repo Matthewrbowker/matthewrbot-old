@@ -2,7 +2,7 @@
 
 function getTaskNumber($taskName) {
     switch ($taskName) {
-        case("reuqested_articles"):
+        case("requested_articles"):
             return 1;
             break;
         case("TEMPLATE"):
@@ -15,9 +15,10 @@ function getTaskNumber($taskName) {
 }
 
 function checkRun($task, $runUrl) {
+    $taskNum = getTaskNumber($task);
 
     @$global = file_get_contents($runUrl . "&action=raw");
-    @$local = file_get_contents("{$runUrl}/{$this->getTaskNumber($task)}&action=raw");
+    @$local = file_get_contents("{$runUrl}/{$taskNum}&action=raw");
 
     if ($global == "on" && $local == "on") {
         return true;
