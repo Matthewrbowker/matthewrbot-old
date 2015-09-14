@@ -1,25 +1,29 @@
 <?php
 
+function getTaskNumber($taskName) {
+    switch ($taskName) {
+        case("reuqested_articles"):
+            return 1;
+            break;
+        case("TEMPLATE"):
+            return 0;
+            break;
+        default:
+            return 999;
+            break;
+    }
+}
+
 function checkRun($task, $runUrl) {
 
     @$global = file_get_contents($runUrl . "&action=raw");
-    @$local = file_get_contents("{$runUrl}/{$task}&action=raw");
+    @$local = file_get_contents("{$runUrl}/{$this->getTaskNumber($task)}&action=raw");
 
     if ($global == "on" && $local == "on") {
         return true;
     }
     else {
         return false;
-    }
-}
-
-function getRequestedFile($modules, $num) {
-    $location = "modules/" . $modules[$num] . ".php";
-    if (file_exists($location)) {
-        require($location);
-    }
-    else {
-        die("Module does not exist");
     }
 }
 

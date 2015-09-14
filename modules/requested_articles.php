@@ -1,11 +1,25 @@
 <?php
 
-class module {
+class requested_article {
     private $db;
     private $p;
     function __construct(wpDatabase $dbTemp, Wiki $pTemp) {
         $this->db = $dbTemp;
         $this->p = $pTemp;
+    }
+
+    function parseSources($json = "") {
+        $jsonArray = json_decode($json, true);
+        //var_dump($jsonArray);
+        foreach ($jsonArray["Sources"] as $row) {
+            var_dump($row);
+            print "*{{Cite {$row['type']} | }}";
+            while ($value = current($row)) {
+                echo key($row);
+                next($row);
+            }
+        }
+        die();
     }
 
     private function insertRequest($pageString = "", $reqNum = "unknown", $title = "", $description="", $sources = "", $user = "") {
@@ -31,7 +45,7 @@ class module {
     }
 
     function execute() {
-        // NEEDS TO BE EDITED
+        // TODO: Split function into methods
         $qResult = $this->db->selectQuery("*", "requests", ["done",'0'], 1000);
 
         foreach ($qResult as $row) {
@@ -46,8 +60,8 @@ class module {
 
             $id = $row['id'];
 
-            $newPageText = $this->insertRequest($page -> get_text(), $row['id'], $row['subject'], $row["Description"], $row["Sources"], $row["Username"]);
-            echo $newPageText;
+            $newPageText = $this->insertRequest($page -> get_text(), $row['id'], $row['subject'], $row["Description"], $this->parseSources($row["Sources"]), $row["Username"]);
+            //echo $newPageText;
             $page->edit($newPageText, "Inserting request for [[{$row['subject']}]]");
 
             $this->db->updateQuery("requests",['done','1'],['id',$id]);

@@ -1,6 +1,6 @@
 <?php
 
-class module {
+class TEMPLATE {
     var $db;
     var $p;
     function __construct(wpDatabase $dbTemp, Wiki $pTemp) {
