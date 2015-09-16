@@ -11,7 +11,7 @@ date_default_timezone_set("UTC");
 
 if (!checkRun($task, $controlUrl)) die("Configuration set to off... exiting.\n\n");
 
-$x = Peachy::newWiki("Matthewrbot_local"); //Loads the config file
+$x = Peachy::newWiki("Matthewrbot" ); //Loads the config file
 $db = new wpDatabase($dbhost, $dbname, $dbuser, $dbpw);
 
 if (class_exists($task)) {

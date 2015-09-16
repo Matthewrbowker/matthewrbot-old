@@ -10,16 +10,19 @@ class requested_articles {
 
     function parseSources($json = "") {
         $jsonArray = json_decode($json, true);
+        $retVal = "";
         //var_dump($jsonArray);
-        foreach ($jsonArray["Sources"] as $row) {
-            var_dump($row);
-            print "*{{Cite {$row['type']} | }}";
-            while ($value = current($row)) {
-                echo key($row);
-                next($row);
+        foreach ($jsonArray as $row) {
+            ///var_dump($row);
+            $retVal .= "**{{Cite {$row['type']} ";
+            foreach ($row as $key => $value) {
+                if ($key != "type") {
+                    $retVal .=  "| $key=$value ";
+                }
             }
+            $retVal .= " }}\r\n";
         }
-        die();
+        return $retVal;
     }
 
     private function insertRequest($pageString = "", $reqNum = "unknown", $title = "", $description="", $sources = "", $user = "") {
@@ -27,7 +30,7 @@ class requested_articles {
 
         // Processing script, to build a string template
 
-        $reqString = "* {{Article request |title = {$title} |description = {$description} |user={$user} |sources={$sources} |date=~~~~~}} <!-- Request #AR-{$reqNum} -->";
+        $reqString = "* {{Article request |title = {$title} |description = {$description} |user={$user} |sources=\r\n{$sources} |date=~~~~~}} <!-- Request #AR-{$reqNum} -->";
 
         if ( strpos($pageString, $template) ) {
             $return = str_replace($template,$template . "\r" . $reqString, $pageString);
@@ -45,7 +48,6 @@ class requested_articles {
     }
 
     function execute() {
-        print "HIT MODULE";
         // TODO: Split function into methods
         $qResult = $this->db->selectQuery("*", "requests", ["done",'0'], 1000);
 
@@ -69,6 +71,7 @@ class requested_articles {
 
             sleep('5');
             // END
+            // TODO: Check Run Again
         }
         return 1;
     }
