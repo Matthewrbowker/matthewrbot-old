@@ -17,16 +17,16 @@ $db = new wpDatabase($dbhost, $dbname, $dbuser, $dbpw);
 if (class_exists($task)) {
     $mod = new $task($db, $x);
 } else {
-    die("Error including module");
+    die("Error including module\r\n");
 }
 
 $return = $mod->execute();
 
 if ($return) {
-    print "Module completed successfully";
+    print "Module completed successfully\r\n\r\n";
     return 0;
 }
 else {
-    print "Module did not complete successfully";
+    print "Module did not complete successfully\r\n\r\n";
     return 1;
 }

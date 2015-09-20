@@ -1,6 +1,7 @@
 <?php
 
 function getTaskNumber($taskName) {
+    // TODO: Handle this method better
     switch ($taskName) {
         case("requested_articles"):
             return 1;
