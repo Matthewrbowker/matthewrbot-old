@@ -6,303 +6,142 @@ This is an IRC Daemon.  It is started with nohup.
 It should query from a database, send the message, then remove the message from the database.
 */
 
-//So the bot doesnt stop.
-
+// Prevent PHP from stopping the script after 30 sec
 set_time_limit(0);
 
-ini_set('display_errors', 'on');
+//error_reporting(0);
 
+class ircd {
+    private $q;
+    private $socket;
+    private $server = "chat.freenode.net";
+    private $port = 6667;
+    private $nicks = ["Matthewrbot", "Matthewrbot_"];
+    private $password = "8zsexw9XADut=C+eXEk6MyquUYJebb";
+    private $chans = ["##matthewrbot"];
+    private $trigger = "?";
+    private $nick;
 
-    //Example connection stuff.
+    private function ircDo($action, $channel = "", $other = "") {
+        $action = str_replace("\n", "", $action);
+        $channel = str_replace("\n", "", $channel);
+        $other = str_replace("\n", "", $other);
+        $string = $action;
+        if ($channel != "") { $string .= " $channel"; }
+        if ($other != "") {$string .= " :$other"; }
+        $string .= "\r\n";
+        fputs($this->socket, $string);
+        print $string;
+    }
 
-    $config = array(
-        'server' => 'irc.freenode.net',
-        'port' => 6667,
-        'nick' => 'matthewrbot',
-        'name' => 'matthewrbot',
-        'pass' => 'kindle',
-    );
+    private function canDo($hostmask) {
+        print "$hostmask\n";
+        return $hostmask == "wikimedia/matthewrbowker";
+    }
 
-
-class IRCBot {
-
-    //This is going to hold our TCP/IP connection
-
-    var $socket;
-
-
-
-    //This is going to hold all of the messages both server and client
-
-    var $ex = array();
-
-
-
-    /*
-
-     Construct item, opens the server connection, logs the bot in
-
-
-
-     @param array
-
-    */
-
-    function __construct($config)
-
-    {
-
-        $this->socket = fsockopen($config['server'], $config['port']);
-
-        $this->login($config);
-
-        $this->send_data('JOIN', '##matthewrbot');
-
-        $this->main();
-
+    private function say($channel, $message) {
+        $this->ircDo("PRIVMSG", $channel, $message);
     }
 
 
-
-    /*
-
-     Logs the bot in on the server
-
-
-
-     @param array
-
-    */
-
-    function login($config)
-
-    {
-
-        $this->send_data('USER', $config['nick'].' acidavengers.co.uk '.$config['nick'].' :'.$config['name']);
-
-        $this->send_data('NICK', $config['nick']);
-
-        $this->send_data('NS', "IDENTIFY " .  $config[nick] . " " . $config[pass]);
-
+    private function rejoin($channel, $reqChanel) {
+        $this->ircDo("PART", $channel, "Rejoining per request in $channel");
+        $this->ircDo("JOIN", $channel);
     }
 
-
-
-    /*
-
-     This is the workhorse function, grabs the data from the server and displays on the browser
-
-    */
-
-    function main()
-
-    {
-
-        $data = fgets($this->socket, 128);
-
-        echo nl2br($data);
-
-        flush();
-
-        $this->ex = explode(' ', $data);
-
-
-
-        if($this->ex[0] == 'PING')
-
-        {
-
-            $this->send_data('PONG', $this->ex[1]); //Plays ping-pong with the server to stay connected.
-
+    private function rejoinAll($channel) {
+        foreach ($this->chans as $row) {
+            $this->rejoin($row, $channel);
         }
-
-
-
-        $command = str_replace(array(chr(10), chr(13)), '', $this->ex[3]);
-
-
-
-        switch($command) //List of commands the bot responds to from a user.
-
-        {
-
-            case ':!join':
-
-                $this->join_channel($this->ex[4]);
-
-                break;
-
-
-
-            case ':!quit':
-
-                $this->send_data('QUIT', 'acidavengers.co.uk made Bot');
-
-                break;
-
-
-
-            case ':!op':
-
-                $this->op_user();
-
-                break;
-
-
-
-            case ':!deop':
-
-                $this->op_user('','', false);
-
-                break;
-
-
-
-            case ':!protect':
-
-                $this->protect_user();
-
-                break;
-
-        }
-
-
-
-        $this->main();
-
     }
 
-
-
-    function send_data($cmd, $msg = null) //displays stuff to the broswer and sends data to the server.
-
-    {
-
-        if($msg == null)
-
-        {
-
-            fputs($this->socket, $cmd."\r\n");
-
-            echo '<strong>'.$cmd.'</strong><br />';
-
-        } else {
-
-            fputs($this->socket, $cmd.' '.$msg."\r\n");
-
-            echo '<strong>'.$cmd.' '.$msg.'</strong><br />';
-
-        }
-
+    public function __construct() {
     }
 
+    // public function __construct(queuep $q) {
+    //    $this->q = $q;
+    //}
 
+    function run() {
+        $this->nick = $this->nicks[0];
+        $this->socket = fsockopen($this->server, $this->port) or die("Cannot connect");
+        $this->ircDo("USER", "{$this->nick} {$this->nick} {$this->nick} {$this->nick} :{$this->nick}");
+        $this->ircDo("NICK", $this->nick);
+        $this->say("NickServ", "IDENTIFY {$this->nick} {$this->password}");
+        sleep(5);
+        $this->ircDo("JOIN", $this->chans[0]);
 
-    function join_channel($channel) //Joins a channel, used in the join function.
+        while(1) {
+            print "loop...\r\n";
+            if($data = fgets($this->socket)) {
 
-    {
+                print $data;
+                $ex = explode(' ', $data);
+                $rawcmd = explode(':', $ex[3]);
+                @$oneword = explode('\n', $rawcmd);
+                $channel = $ex[2];
+                $nicka = explode('@', $ex[0]);
+                $nickb = explode('!', $nicka[0]);
+                $nickc = explode(':', $nickb[0]);
 
-        if(is_array($channel))
+                @$host = $nicka[1];
+                @$nick = $nickc[1];
+                if($ex[0] == "PING"){
+                    $this->ircDo("PONG ", "", substr($ex[1], 1));
+                }
 
-        {
+                $args = NULL; for ($i = 4; $i < count($ex); $i++) { $args .= $ex[$i] . ' '; }
 
-            foreach($channel as $chan)
-
-            {
-
-                $this->send_data('JOIN', $chan);
-
+                if ($rawcmd[1] == "{$this->trigger}about") {
+                    $this->say($channel, "$nick: I am Matthewrbot, written by Matthew Bowker.  I am currently running version 0.1devel1.  My source code is at <https://github.com/matthewrbowker/matthewrbot>.");
+                }
+                elseif ($rawcmd[1] == "{$this->trigger}sayit") {
+                    $this->say($channel, $args);
+                }
+                elseif ($rawcmd[1] ==  "{$this->trigger}md5") {
+                    $this->say($channel, "MD5 " . MD5($args));
+                }
+                elseif ($rawcmd[1] == "{$this->trigger}ping") {
+                    $this->say($channel, "PONG");
+                }
+                elseif ($rawcmd[1] == "{$this->trigger}join") {
+                    $this->chans[] = $args;
+                    $this->ircDo("JOIN", $args);
+                }
+                elseif ($rawcmd[1] == "{$this->trigger}rejoinall") {
+                    if ($this->canDo($host)) {
+                        $this->rejoinAll($channel);
+                    }
+                    else {
+                        $this->say($channel, "{$nick}: You're not allowed to give me that command.");
+                    }
+                }
+                elseif ($rawcmd[1] == "{$this->trigger}rejoin") {
+                    if ($this->canDo($host)) {
+                        $this->rejoin($args, $channel);
+                    }
+                    else {
+                        $this->say($channel, "{$nick}: You're not allowed to give me that command.");
+                    }
+                }
+                elseif ($rawcmd[1] == "{$this->trigger}quit") {
+                    if ($this->canDo($host)) {
+                        $this->ircDo("QUIT", "", "SHUTDOWN: Requested by operator.");
+                        sleep(10);
+                        return;
+                    }
+                    else {
+                        $this->say($channel, "{$nick}: You're not allowed to give me that command.");
+                    }
+                }
             }
-
-        } else {
-
-            $this->send_data('JOIN', $channel);
-
+            else {
+                print("\tNothing to do...\r\n");
+            }
         }
-
     }
-
-
-
-    function protect_user($user = '')
-
-    {
-
-        if($user == '')
-
-        {
-
-if(php_version() >= '5.3.0')
-            {
-                $user = strstr($this->ex[0], '!', true);
-            } else {
-                $length = strstr($this->ex[0], '!');
-                $user   = substr($this->ex[0], 0, $length);
-            }
-
-        }
-
-
-
-        $this->send_data('MODE', $this->ex[2] . ' +a ' . $user);
-
-    }
-
-
-
-    function op_user($channel = '', $user = '', $op = true)
-
-    {
-
-        if($channel == '' || $user == '')
-
-        {
-
-            if($channel == '')
-
-            {
-
-                $channel = $this->ex[2];
-
-            }
-
-
-
-            if($user == '')
-
-            {
-
-if(php_version() >= '5.3.0')
-            {
-                $user = strstr($this->ex[0], '!', true);
-            } else {
-                $length = strstr($this->ex[0], '!');
-                $user   = substr($this->ex[0], 0, $length);
-            }
-            }
-
-        }
-
-
-
-        if($op)
-
-        {
-
-            $this->send_data('MODE', $channel . ' +o ' . $user);
-
-        } else {
-
-            $this->send_data('MODE', $channel . ' -o ' . $user);
-
-        }
-
-    }
-
 }
 
+$irc = new ircd();
 
-    $bot = new IRCBot($config);
-
-?>
-
+$irc->run();
