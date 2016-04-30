@@ -1,24 +1,53 @@
 import jwiki.core.*;
+import Includes.*;
 
-import java.net.URL;
-import java.net.URLClassLoader;
-
-public class MatthewrbotBase {
-
+public class MatthewrbotBase{
     public static void main(String[] args) {
-        // Prints "Hello, World" to the terminal window.
-        System.out.println("Hello, World");
+        config con = new config();
+        Wiki wiki;
+        logging log;
+        ircd irc;
+        queuep queue;
 
-        //Wiki wiki = new Wiki("Username", "Password", "en.wikipedia.org"); // login
+        con.setDebug(true);
 
-        ClassLoader cl = ClassLoader.getSystemClassLoader();
+        log = new logging();
 
-        URL[] urls = ((URLClassLoader)cl).getURLs();
+        try {
+            log.string("Hello, World!");
+            // wiki = new Wiki(con.getWikiUsername(), con.getWikiPassword(), con.getWikiUrl()); // login
+            queue = new queuep();
 
-        for(URL url: urls){
-            System.out.println(url.getFile());
+            queue.put("##matthewrbot", "1. This is a test message");
+            queue.put("##matthewrbowker", "1. This is a test message");
+            queue.put("##matthewrbot", "2. This is a test message");
+            queue.put("##matthewrbot", "3. This is a test message");
+            queue.put("##matthewrbot", "4. This is a test message");
+            queue.put("##matthewrbot", "5. This is a test message");
+            queue.put("##matthewrbot", "6. This is a test message");
+            queue.put("##matthewrbot", "7. This is a test message");
+            queue.put("##matthewrbot", "8. This is a test message");
+            queue.put("##matthewrbot", "9. This is a test message");
+
+            irc = new ircd(con, log, queue);
+
+            Thread.sleep(100);
+
+            irc.run();
+
         }
+        catch (Throwable e) {
+            con.setExitCode(1);
+            log.error(e.getMessage());
+            if (con.getDebug()) e.printStackTrace();
+        }
+        finally {
+            log.string("Process exiting with code " + con.getExitCode());
+            log.string("Shutting down...");
+            // Do stuff here...
+            log.string("Complete.");
+        }
+
+        System.exit(con.getExitCode());
     }
-
-
 }
