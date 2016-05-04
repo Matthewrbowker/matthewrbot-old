@@ -1,5 +1,6 @@
 import jwiki.core.*;
 import Includes.*;
+import Pods.*;
 
 public class MatthewrbotBase{
     public static void main(String[] args) {
@@ -30,6 +31,8 @@ public class MatthewrbotBase{
             queue.put("##matthewrbot", "9. This is a test message");
 
             irc = new ircd(con, log, queue);
+            irc.registerChannel("##matthewrbot");
+            irc.registerChannel("##matthewrbowker");
 
             Thread.sleep(100);
 

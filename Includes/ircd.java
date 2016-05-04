@@ -69,6 +69,11 @@ public class ircd {
         return false;
     }
 
+    public void registerChannel(String channelName) {
+        this.chans[this.chansCount] = channelName;
+        this.chansCount ++;
+    }
+
     public ircd(config tempCon, logging tempLog, queuep tempQueue) throws Throwable {
         this.con = tempCon;
         this.log = tempLog;
@@ -79,8 +84,6 @@ public class ircd {
         this.nicks[1] = "Matthewrbot_";
 
         this.chans = new String[100];
-        this.chans[0] = "##matthewrbot";
-        this.chansCount ++;
 
                 this.socket = new Socket(server, port);
         this.out =
@@ -100,7 +103,10 @@ public class ircd {
         this.ircDo("NICK", this.nick);
         this.say("NickServ", "IDENTIFY " + this.nick + " " + this.password);
         Thread.sleep(5);
-        this.ircDo("JOIN", this.chans[0]);
+
+        for(int i = 0; i < chansCount; i++) {
+            this.ircDo("JOIN", chans[i]);
+        }
 
         String data;
         String allData[];
@@ -131,7 +137,12 @@ public class ircd {
                             ready = true;
                         }
                     }
-                    if (allData[1].equals("PRIVMSG")) {
+                    else if (allData[1].equals("KICK")) {
+                        if (allData[3].equals(nick)) {
+                            log.string("I've been kicked out of " + allData[2]);
+                        }
+                    }
+                    else if (allData[1].equals("PRIVMSG")) {
                         sendNick = allData[0].split("!")[0];
                         sendCloak = allData[0].split("@")[1];
                         message = data.split(":")[2];
